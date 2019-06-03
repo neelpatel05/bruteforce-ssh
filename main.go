@@ -72,11 +72,23 @@ func bruteforce(filename string, reader *bufio.Reader) {
 func sshconnection(username string, password string) bool {
 	defer cleanup()
 
-	config := ssh.ClientConfig{
+	config := &ssh.ClientConfig{
 		User: username,
 		Auth: []ssh.AuthMethod{
 			ssh.Password(password),
 		},
+	}
+
+	hostname,err := os.Hostname()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	_, err = ssh.Dial("tcp", hostname+":"+"22", config)
+	if err!=nil{
+		return false
+	}else{
+		return true
 	}
 }
 
