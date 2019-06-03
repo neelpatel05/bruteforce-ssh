@@ -3,10 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 func cleanup() {
@@ -16,6 +18,42 @@ func cleanup() {
 }
 
 func bruteforce(filename string, reader *bufio.Reader) {
+	defer cleanup()
+
+	file, err := os.Open(filename)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer file.Close()
+
+	words, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	wordlist := strings.Split(string(words),"\n")
+
+	wordListStat,_ := os.Stat("word-list.txt")
+	fmt.Print("-----------------------------\n","File: ",wordListStat.Name(),"\nFile size: ",wordListStat.Size()/(1024),"KB\n")
+	fmt.Println("Total words: ",len(wordlist))
+	fmt.Println("-----------------------------")
+
+	fmt.Print("$: Enter the username of computer: ")
+	username, err := reader.ReadString('\n')
+	if err != nil {
+		panic(err.Error())
+	}
+
+	status := false
+	t1 := time.Now()
+
+	for index, password := range wordlist {
+		status = sshconnection(username, password)
+	}
+
+}
+
+func sshconnection(username string, password string) bool {
 
 }
 
