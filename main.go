@@ -120,7 +120,16 @@ func one(reader *bufio.Reader) {
 }
 
 func two(reader *bufio.Reader) {
+	defer cleanup()
 
+	fmt.Println("$: Enter the filename")
+	filename, err := reader.ReadString('\n')
+	if err!=nil {
+		panic(err.Error())
+	}
+	filename = strings.TrimSpace(filename)
+
+	bruteforce(filename, reader)
 }
 
 func main() {
